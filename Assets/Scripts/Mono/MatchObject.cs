@@ -1,22 +1,19 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class MatchObject : MonoBehaviour, IGridObject, IGroupable, IDamagable, IDestroyable
 {
     public int WidthIndex { get; set; }
     public int HeightIndex { get; set; }
-    public Image ObjectImage => image;
-    public Sprite[] StateSprites => stateSprites;
-    public int GroupIndex { get; }
+    [field: SerializeField] public SpriteRenderer SpriteRenderer { get; private set; }
+    [field: SerializeField] public Sprite[] StateSprites { get; private set; }
+    [field: SerializeField] public int GroupIndex { get; private set; }
     public int GroupCount => GroupElements.Count;
     public HashSet<IGroupable> GroupElements { get; private set; }
     public Action OnDamaged { get; }
     public Action OnDestroyed { get; }
 
-    [SerializeField] private Image image;
-    [SerializeField] private Sprite[] stateSprites;
 
 
     private void Awake()
@@ -43,7 +40,7 @@ public class MatchObject : MonoBehaviour, IGridObject, IGroupable, IDamagable, I
 
     public void SetSprite(int index)
     {
-        ObjectImage.sprite = stateSprites[index];
+        SpriteRenderer.sprite = StateSprites[index];
     }
 
     public void Destroy()
