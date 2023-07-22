@@ -1,9 +1,12 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private GridData gridData;
-    [SerializeReference] private IGridObject IGridObject;
+    [SerializeField] private float dropHeight = 20;
+    [SerializeField] private float dropTime = 1;
+
     
     private Grid<IGridObject> grid;
     
@@ -20,9 +23,17 @@ public class GridManager : MonoBehaviour
 
     IGridObject CreateElement(Grid<IGridObject> grid, int x, int y)
     {
-        IGridObject gridObject = Instantiate(gridData.GetRandomGridObject(),grid.GetWorldPosition(x,y),Quaternion.identity).GetComponent<IGridObject>();
+        Vector3 targetPos = grid.GetWorldPosition(x, y);
+        Vector3 dropPos = new Vector3(targetPos.x, dropHeight,0);
+        IGridObject gridObject = Instantiate(gridData.GetRandomGridObject(),dropPos ,Quaternion.identity).GetComponent<IGridObject>();
         gridObject.SetSprite(0);
+        MoveGridObject(gridObject, targetPos, dropTime, Ease.OutBounce);
         return gridObject;
+    }
+
+    void MoveGridObject(IGridObject gridObject, Vector3 targetPos, float moveTime, Ease moveEase = Ease.Linear)
+    {
+        gridObject.transform.DOMove(targetPos, moveTime).SetEase(moveEase);
     }
 }
 
