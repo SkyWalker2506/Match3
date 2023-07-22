@@ -2,6 +2,6 @@ using System;
 
 public interface IDestroyable
 {
-    Action OnDestroyed { get; }
+    Action<IGridObject> OnDestroyed { get; }
     void Destroy();
 }

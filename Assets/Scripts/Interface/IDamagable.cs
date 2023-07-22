@@ -2,6 +2,6 @@ using System;
 
 public interface IDamagable
 {
-    Action OnDamaged { get; }
+    Action<IGridObject> OnDamaged { get; }
     void Damage(int damage);
 }
