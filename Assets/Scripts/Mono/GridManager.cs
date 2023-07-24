@@ -6,10 +6,9 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GridData gridData;
     [SerializeField] private float dropHeight = 20;
     [SerializeField] private float dropTime = 1;
-
     
     private Grid<IGridObject> grid;
-    
+    private GroupSystem groupSystem = new GroupSystem();
     private void Awake()
     {
         CreateGrid();
@@ -19,6 +18,7 @@ public class GridManager : MonoBehaviour
     private void CreateGrid()
     {
         grid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize*-.5f, CreateElement);
+        groupSystem.GroupGridObjects(grid.GridObjects);
     }
 
     IGridObject CreateElement(Grid<IGridObject> grid, int x, int y)

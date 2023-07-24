@@ -6,7 +6,7 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
 {
     [field: SerializeField] public int GroupIndex { get; private set; }
     public int GroupCount => GroupElements.Count;
-    public HashSet<IGroupable> GroupElements { get; private set; }
+    public HashSet<IGroupable> GroupElements { get; set; }
     public Action<IGridObject> OnDamaged { get; }
     public Action<IGridObject> OnDestroyed { get; }
     public Action OnMoved { get; }
