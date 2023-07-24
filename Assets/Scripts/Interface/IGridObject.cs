@@ -8,5 +8,5 @@ public interface IGridObject
     int HeightIndex { get; set; }
     SpriteRenderer SpriteRenderer { get; }
     Sprite[] StateSprites { get; }
-    void SetSprite(int index);
+    void UpdateSprite();
 }

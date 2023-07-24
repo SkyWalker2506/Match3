@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public interface IGroupable
 {
+    Transform transform { get; }
     int GroupIndex { get; }
-    int GroupCount { get; }
-    HashSet<IGroupable> GroupElements{ get; set; }
+    int GroupElementCount { get; }
+    HashSet<Transform> GroupElements { get; set; }
     void AddGroupElement(IGroupable groupable);
     void ResetGroupElements();
-
 }

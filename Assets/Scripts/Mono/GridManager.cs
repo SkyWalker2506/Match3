@@ -18,7 +18,7 @@ public class GridManager : MonoBehaviour
     private void CreateGrid()
     {
         grid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize*-.5f, CreateElement);
-        groupSystem.GroupGridObjects(grid.GridObjects);
+        UpdateGridElements();
     }
 
     IGridObject CreateElement(Grid<IGridObject> grid, int x, int y)
@@ -26,7 +26,12 @@ public class GridManager : MonoBehaviour
         Vector3 targetPos = grid.GetWorldPosition(x, y);
         Vector3 dropPos = new Vector3(targetPos.x, dropHeight,0);
         IGridObject gridObject = Instantiate(gridData.GetRandomGridObject(),dropPos ,Quaternion.identity).GetComponent<IGridObject>();
-        gridObject.SetSprite(0);
+        gridObject.WidthIndex = x;
+        gridObject.HeightIndex = y;
+        if (gridObject.transform.TryGetComponent(out IRenderByGroupSize renderByGroupSize))
+        {
+            renderByGroupSize.RendererLevelLimits = gridData.RendererLevelLimits;
+        }
         MoveGridObject(gridObject, targetPos, dropTime, Ease.OutBounce);
         return gridObject;
     }
@@ -34,6 +39,15 @@ public class GridManager : MonoBehaviour
     void MoveGridObject(IGridObject gridObject, Vector3 targetPos, float moveTime, Ease moveEase = Ease.Linear)
     {
         gridObject.transform.DOMove(targetPos, moveTime).SetEase(moveEase);
+    }
+
+    void UpdateGridElements()
+    {
+        groupSystem.GroupGridObjects(grid.GridObjects);
+        foreach (IGridObject gridObject in grid.GridObjects)
+        {
+            gridObject.UpdateSprite();
+        }
     }
 }
 

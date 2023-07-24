@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2160127704383000429, guid: 742a01c37b2ed4a82a0c179bb392fb73, type: 3}
+      propertyPath: <GroupIndex>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2160127704383000429, guid: 742a01c37b2ed4a82a0c179bb392fb73, type: 3}
       propertyPath: <StateSprites>k__BackingField.Array.size
       value: 4
       objectReference: {fileID: 0}

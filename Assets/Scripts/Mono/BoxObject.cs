@@ -27,4 +27,9 @@ public class BoxObject : GridObject, IHaveHealth, IDamagable, IDestroyable
     {
         OnDestroyed?.Invoke(this);
     }
+
+    public override void UpdateSprite()
+    {
+        SetSprite(CurrentHealth-1);
+    }
 }
