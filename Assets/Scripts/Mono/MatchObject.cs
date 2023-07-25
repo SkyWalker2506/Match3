@@ -9,9 +9,9 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
     [field: SerializeField] public HashSet<IGridObject> GroupElements { get; set; }
     public int[] RendererLevelLimits { get; set; }
     public Action<IGridObject> OnDamaged { get; }
-    public Action<IGridObject> OnDestroyed { get; }
+    public Action<IGridObject> OnDestroyed { get; set; }
     public Action OnMoved { get; }
-    public Action<IGridObject> OnClicked { get; }
+    public Action<IGridObject> OnClicked { get; set; }
 
 
     private void Awake()
@@ -19,7 +19,8 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
         ResetGroupElements();
     }
     
-    void OnMouseDown () {
+    void OnMouseDown () 
+    {
         OnClicked?.Invoke(this);
     }
 
@@ -43,6 +44,7 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
     public void Destroy()
     {
         OnDestroyed?.Invoke(this);
+        Destroy(gameObject);
     }
 
     public void MoveDown(IGridObject gridObject)

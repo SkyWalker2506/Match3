@@ -77,8 +77,6 @@ public class Grid<TGridObject> {
             return default(TGridObject);
         }
     }
-    
-    
 
     public TGridObject GetGridObject(Vector3 worldPosition) {
         int x, y;

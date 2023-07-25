@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageSystem 
+public class DamageSystem : IDamageSystem
 {
     public void ApplyMatchDamage(Grid<IGridObject> grid, IGridObject gridObject)
     {
@@ -57,7 +57,7 @@ public class DamageSystem
                     neighbours.Add(left);
                 }
             }
-            if (widthIndex < grid.GetWidth())
+            if (widthIndex < grid.GetWidth()-1)
             {
                 IGridObject right = grid.GridObjects[widthIndex + 1, heightIndex];
                 if (right != null)
@@ -73,7 +73,7 @@ public class DamageSystem
                     neighbours.Add(down);
                 }
             }
-            if (heightIndex <  grid.GetHeight())
+            if (heightIndex <  grid.GetHeight()-1)
             {
                 IGridObject up = grid.GridObjects[widthIndex, heightIndex+1];
                 if (up != null)

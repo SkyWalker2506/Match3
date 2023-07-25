@@ -6,7 +6,7 @@ public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDest
     [field: SerializeField]  public int MaxHealth { get; private set; }
     public int CurrentHealth { get; private set; }
     public Action<IGridObject> OnDamaged { get; }
-    public Action<IGridObject> OnDestroyed { get; }
+    public Action<IGridObject> OnDestroyed { get; set; }
 
     private void Awake()
     {
@@ -15,7 +15,8 @@ public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDest
 
     public void Damage(int damage)
     {
-        CurrentHealth =- damage;
+        CurrentHealth -= damage;
+        UpdateSprite();
         OnDamaged?.Invoke(this);
         if (CurrentHealth <= 0)
         {
@@ -26,6 +27,7 @@ public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDest
     public void Destroy()
     {
         OnDestroyed?.Invoke(this);
+        Destroy(gameObject);
     }
 
     public override void UpdateSprite()

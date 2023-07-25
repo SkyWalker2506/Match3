@@ -2,11 +2,6 @@ using System;
 
 public interface IDestroyable
 {
-    Action<IGridObject> OnDestroyed { get; }
+    Action<IGridObject> OnDestroyed { get; set; }
     void Destroy();
-}
-
-public interface IClickable
-{
-    Action<IGridObject> OnClicked { get; }
 }

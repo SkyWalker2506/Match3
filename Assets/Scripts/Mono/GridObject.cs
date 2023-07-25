@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class GridObject : MonoBehaviour, IGridObject
@@ -10,9 +11,13 @@ public abstract class GridObject : MonoBehaviour, IGridObject
 
     public abstract void UpdateSprite();
 
-    public void SetSprite(int index)
+    protected void SetSprite(int index)
     {
-        SpriteRenderer.sprite = StateSprites[index];
+        if (SpriteRenderer)
+        {
+            index = Math.Clamp(index, 0, StateSprites.Length-1);
+            SpriteRenderer.sprite = StateSprites[index];
+        }
     }
 
 }

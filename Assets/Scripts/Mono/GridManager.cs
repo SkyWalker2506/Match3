@@ -8,8 +8,8 @@ public class GridManager : MonoBehaviour
     [SerializeField] private float dropTime = 1;
     
     private Grid<IGridObject> grid;
-    private GroupSystem groupSystem = new GroupSystem();
-    private DamageSystem damageSystem = new DamageSystem();
+    private IGroupSystem groupSystem = new GroupSystem();
+    private IDamageSystem damageSystem = new DamageSystem();
     
     
     private void Awake()
@@ -35,10 +35,35 @@ public class GridManager : MonoBehaviour
         {
             renderByGroupSize.RendererLevelLimits = gridData.RendererLevelLimits;
         }
+        if (gridObject.transform.TryGetComponent(out IClickable clickable))
+        {
+            clickable.OnClicked += OnGridObjectClicked;
+        }
+        if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
+        {
+            destroyable.OnDestroyed += OnGridObjectDestroyed;
+        }
+        
         MoveGridObject(gridObject, targetPos, dropTime, Ease.OutBounce);
         return gridObject;
     }
 
+    private void OnGridObjectClicked(IGridObject gridObject)
+    {
+        damageSystem.ApplyMatchDamage(grid,gridObject);
+    }
+
+    private void OnGridObjectDestroyed(IGridObject gridObject)
+    {
+        if (gridObject.transform.TryGetComponent(out IClickable clickable))
+        {
+            clickable.OnClicked -= OnGridObjectClicked;
+        }
+
+        grid.GridObjects[gridObject.WidthIndex, gridObject.HeightIndex] = null;
+        UpdateGridElements();
+    }
+    
     void MoveGridObject(IGridObject gridObject, Vector3 targetPos, float moveTime, Ease moveEase = Ease.Linear)
     {
         gridObject.transform.DOMove(targetPos, moveTime).SetEase(moveEase);
@@ -49,7 +74,7 @@ public class GridManager : MonoBehaviour
         groupSystem.GroupGridObjects(grid.GridObjects);
         foreach (IGridObject gridObject in grid.GridObjects)
         {
-            gridObject.UpdateSprite();
+            gridObject?.UpdateSprite();
         }
     }
 }

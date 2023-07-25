@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GroupSystem
+public class GroupSystem: IGroupSystem
 {
     private GroupableLists groupableLists;
     
     public void GroupGridObjects(IGridObject[,] gridObjects)
     {
         groupableLists = new GroupableLists();
-        if (gridObjects[0, 0].transform.TryGetComponent(out IGroupable firstGroupable))
+        if (gridObjects[0, 0]!=null && gridObjects[0, 0].transform.TryGetComponent(out IGroupable firstGroupable))
         {
             groupableLists.AddGroupableList(new GroupableList(firstGroupable));
         }
