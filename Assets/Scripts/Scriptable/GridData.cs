@@ -10,12 +10,13 @@ public class GridData : ScriptableObject
     public int Height;
     [Min(.25f)]
     public float CellSize;
-    public GameObject[] GridObjects;
+    public GameObject[] MatchObjects;
+    public GameObject[] ObstacleObjects;
     [Header("Group Renderer Settings")] 
     public int[] RendererLevelLimits;
     
-    public GameObject GetRandomGridObject()
+    public GameObject sGetRandomGridObject()
     {
-       return GridObjects[Random.Range(0, GridObjects.Length)];
+       return MatchObjects[Random.Range(0, MatchObjects.Length)];
     }
 }

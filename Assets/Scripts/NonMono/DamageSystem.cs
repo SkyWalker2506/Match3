@@ -14,10 +14,10 @@ public class DamageSystem : IDamageSystem
                 gridObjects.Add(element);
             }
         }
-        else
+        if (gridObjects.Count < 2)
         {
             Debug.Log("No Match");
-            return;
+            return;                
         }
         
         HashSet<IGridObject> neighbourGridObjects = GetNeighbourGridObjects(grid, gridObjects);

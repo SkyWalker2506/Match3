@@ -25,8 +25,10 @@ public class Grid<TGridObject> {
 
         GridObjects = new TGridObject[width, height];
 
-        for (int x = 0; x < GridObjects.GetLength(0); x++) {
-            for (int y = 0; y < GridObjects.GetLength(1); y++) {
+        for (int x = 0; x < GridObjects.GetLength(0); x++) 
+        {
+            for (int y = 0; y < GridObjects.GetLength(1); y++) 
+            {
                 GridObjects[x, y] = createGridObject(this, x, y);
             }
         }

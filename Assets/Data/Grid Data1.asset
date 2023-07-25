@@ -15,10 +15,11 @@ MonoBehaviour:
   Width: 4
   Height: 7
   CellSize: 2.7
-  GridObjects:
+  MatchObjects:
   - {fileID: 5601931222063731694, guid: f1fcf7832be194868b2b5439b7044ed3, type: 3}
   - {fileID: 5601931222063731694, guid: a90d9b5bc65c649009b8c77a75981875, type: 3}
   - {fileID: 5601931222063731694, guid: 05fa2617948a04aa3b5708cd695f0cc3, type: 3}
   - {fileID: 5601931222063731694, guid: e3185108566814de4b0466860d49980d, type: 3}
+  ObstacleObjects:
   - {fileID: 6157377620429315330, guid: 1281e89bf019b40d081bc61df7c24c52, type: 3}
   RendererLevelLimits: 020000000300000004000000

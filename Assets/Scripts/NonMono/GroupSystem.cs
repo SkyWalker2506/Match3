@@ -7,11 +7,9 @@ public class GroupSystem: IGroupSystem
     
     public void GroupGridObjects(IGridObject[,] gridObjects)
     {
-
         groupableLists = new GroupableLists();
         if (gridObjects[0, 0] != null && gridObjects[0, 0].transform.TryGetComponent(out IGroupable firstGroupable))
         {
-            firstGroupable.GroupElements.Clear();
             groupableLists.AddGroupableList(new GroupableList(firstGroupable));
         }
 
@@ -21,8 +19,6 @@ public class GroupSystem: IGroupSystem
             {
                 if (gridObjects[i, j] != null && gridObjects[i, j].transform.TryGetComponent(out IGroupable groupable))
                 {
-                    groupable.GroupElements.Clear();
-
                     if (i > 0)
                     {
                         if(gridObjects[i-1, j] != null && gridObjects[i-1, j].transform.TryGetComponent(out IGroupable groupableLeft))
@@ -53,6 +49,8 @@ public class GroupSystem: IGroupSystem
         {
             foreach (IGroupable groupable in list.Groupables)
             {
+                groupable.GroupElements.Clear();
+
                 foreach (IGroupable g in list.Groupables)
                 {
                     groupable.AddGroupElement(g);
