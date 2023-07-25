@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMoveDown, IRenderByGroupSize
+public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMoveDown, IRenderByGroupSize, IClickable
 {
     [field: SerializeField] public int GroupIndex { get; private set; }
     public int GroupElementCount => GroupElements.Count;
@@ -11,11 +11,18 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
     public Action<IGridObject> OnDamaged { get; }
     public Action<IGridObject> OnDestroyed { get; }
     public Action OnMoved { get; }
+    public Action<IGridObject> OnClicked { get; }
+
 
     private void Awake()
     {
         ResetGroupElements();
     }
+    
+    void OnMouseDown () {
+        OnClicked?.Invoke(this);
+    }
+
 
     public void AddGroupElement(IGroupable groupable)
     {

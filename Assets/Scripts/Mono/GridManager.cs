@@ -9,12 +9,15 @@ public class GridManager : MonoBehaviour
     
     private Grid<IGridObject> grid;
     private GroupSystem groupSystem = new GroupSystem();
+    private DamageSystem damageSystem = new DamageSystem();
+    
+    
     private void Awake()
     {
         CreateGrid();
         Camera.main.orthographicSize = gridData.CellSize * Mathf.Max(gridData.Width, gridData.Height * Camera.main.aspect);
     }
-
+    
     private void CreateGrid()
     {
         grid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize*-.5f, CreateElement);
