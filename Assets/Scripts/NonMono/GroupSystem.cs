@@ -94,18 +94,17 @@ public class GroupSystem: IGroupSystem
         {
             Lists.Add(groupableList);
         }
-        
     }
 
     class GroupableList
     {
         public HashSet<IGroupable> Groupables { get; }
-
+    
         public GroupableList(IGroupable groupable)
         {
             Groupables = new HashSet<IGroupable> { groupable };
         }
-
+    
         public bool ContainsGroupable(IGroupable groupable)
         {
             return Groupables.Contains(groupable);
@@ -115,6 +114,6 @@ public class GroupSystem: IGroupSystem
         {
             Groupables.Add(groupable);
         }
-
+    
     }
 }

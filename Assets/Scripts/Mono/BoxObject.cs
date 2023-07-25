@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDestroyable
+public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDestroyable, INonMoveable
 {
     [field: SerializeField]  public int MaxHealth { get; private set; }
     public int CurrentHealth { get; private set; }
