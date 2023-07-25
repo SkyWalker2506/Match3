@@ -81,9 +81,10 @@ public class GridManager : MonoBehaviour
                 MoveGridObject(gridObject, grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex), dropTime,Ease.OutBounce);
             }
         }
-        yield return new WaitForEndOfFrame();
+
+        yield return new WaitForFixedUpdate();
         groupSystem.GroupGridObjects(grid.GridObjects);
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForFixedUpdate();
         foreach (IGridObject gridObject in grid.GridObjects)
         {
             gridObject?.UpdateSprite();
