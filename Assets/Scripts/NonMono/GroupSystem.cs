@@ -5,9 +5,15 @@ namespace Match3.NonMono
 {
     public class GroupSystem: IGroupSystem
     {
-    
-        public void GroupGridObjects(IGridObject[,] gridObjects)
+        private Grid<IGridObject> grid; 
+        public GroupSystem(Grid<IGridObject> grid)
         {
+            this.grid = grid;
+        }
+        
+        public void GroupGridObjects()
+        {
+            IGridObject[,] gridObjects = grid.GridObjects;
             for (int i = 0; i < gridObjects.GetLength(0); i++)
             {
                 for (int j = 0; j < gridObjects.GetLength(1); j++)
@@ -47,6 +53,20 @@ namespace Match3.NonMono
                 }
             }
         }
+
+        public bool HasAnyGroup()
+        {
+            foreach (IGridObject gridObject in grid.GridObjects)
+            {
+                if(gridObject != null && gridObject.transform.TryGetComponent(out IGroupable groupable))
+                {
+                    if (groupable.GroupElements.Count > 1)
+                        return true;
+                }
+            }
+            return false;
+        }
+
 
         private void TryGroupWithNeighbour(IGroupable groupable, IGroupable groupableNeighbour)
         {

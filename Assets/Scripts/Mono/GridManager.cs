@@ -12,7 +12,7 @@ namespace Match3.Mono
         private float dropHeight => gridData.DropHeight;
         private float dropTime => gridData.DropTime;
         private Grid<IGridObject> gameGrid;
-        private IGroupSystem groupSystem = new GroupSystem();
+        private IGroupSystem groupSystem;
         private IDamageSystem damageSystem = new DamageSystem();
         private ICreateSystem createSystem;
         private IMoveSystem moveSystem;
@@ -23,6 +23,7 @@ namespace Match3.Mono
             createSystem = new CreateSystem(gridData.MatchObjects,gridData.ObstacleObjects);
             CreateGrid();
             createSystem.SetGrid(gameGrid);
+            groupSystem = new GroupSystem(gameGrid);
             moveSystem = new MoveSystem(gameGrid, dropTime);
             modifySystem = new ModifySystem(gameGrid);
             Camera.main.orthographicSize =
@@ -37,15 +38,21 @@ namespace Match3.Mono
 
         private IEnumerator UpdateGridElements()
         {
-            modifySystem.ReIndexGridObjects();
+            modifySystem.ReindexGridObjects();
             CreateMissingGridObjects();
             moveSystem.MoveGridObjectsToPositions();
             yield return new WaitForFixedUpdate();
-            groupSystem.GroupGridObjects(gameGrid.GridObjects);
+            groupSystem.GroupGridObjects();
             yield return new WaitForFixedUpdate();
             foreach (IGridObject gridObject in gameGrid.GridObjects)
             {
                 gridObject?.UpdateSprite();
+            }
+            if (!groupSystem.HasAnyGroup())
+            {
+                yield return new WaitForSecondsRealtime(1);
+                modifySystem.RearrangeDeadlock();
+                StartCoroutine(UpdateGridElements());
             }
         }
     

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grid Data1
   m_EditorClassIdentifier: 
   Width: 5
-  Height: 7
+  Height: 8
   CellSize: 2.7
   MatchObjects:
   - {fileID: 5601931222063731694, guid: f1fcf7832be194868b2b5439b7044ed3, type: 3}
@@ -23,5 +23,5 @@ MonoBehaviour:
   ObstacleObjects:
   - {fileID: 6157377620429315330, guid: 1281e89bf019b40d081bc61df7c24c52, type: 3}
   RendererLevelLimits: 020000000300000004000000
-  DropTime: 0.75
+  DropTime: 1
   DropHeight: 30
