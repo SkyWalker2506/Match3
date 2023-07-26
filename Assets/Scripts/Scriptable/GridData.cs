@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu]
 public class GridData : ScriptableObject
@@ -14,9 +15,10 @@ public class GridData : ScriptableObject
     public GameObject[] ObstacleObjects;
     [Header("Group Renderer Settings")] 
     public int[] RendererLevelLimits;
-    
-    public GameObject sGetRandomGridObject()
-    {
-       return MatchObjects[Random.Range(0, MatchObjects.Length)];
-    }
+    [Header("GridObject Move Settings")] 
+    public float DropTime = 1;
+
+    public float DropHeight = 20;
+
+
 }

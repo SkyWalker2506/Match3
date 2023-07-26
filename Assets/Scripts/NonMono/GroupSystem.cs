@@ -1,16 +1,17 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 public class GroupSystem: IGroupSystem
 {
-    private GroupableLists groupableLists;
     
     public void GroupGridObjects(IGridObject[,] gridObjects)
     {
-        groupableLists = new GroupableLists();
-        if (gridObjects[0, 0] != null && gridObjects[0, 0].transform.TryGetComponent(out IGroupable firstGroupable))
+        foreach (IGridObject gridObject in gridObjects)
         {
-            groupableLists.AddGroupableList(new GroupableList(firstGroupable));
+            if(gridObject != null && gridObject.transform.TryGetComponent(out IGroupable groupable))
+            {
+                groupable.ResetGroupElements();
+            }
         }
 
         for (int i = 0; i < gridObjects.GetLength(0); i++)
@@ -19,15 +20,13 @@ public class GroupSystem: IGroupSystem
             {
                 if (gridObjects[i, j] != null && gridObjects[i, j].transform.TryGetComponent(out IGroupable groupable))
                 {
+                    groupable.AddGroupElement(groupable);
+
                     if (i > 0)
                     {
                         if(gridObjects[i-1, j] != null && gridObjects[i-1, j].transform.TryGetComponent(out IGroupable groupableLeft))
                         {
                             TryGroupWithNeighbour(groupable, groupableLeft);
-                        }
-                        else if (groupableLists.GetGroupableList(groupable) == null)
-                        {
-                            groupableLists.AddGroupableList(new GroupableList(groupable));
                         }
                     }
                     if (j > 0)
@@ -36,25 +35,19 @@ public class GroupSystem: IGroupSystem
                         {
                             TryGroupWithNeighbour(groupable, groupableDown);
                         }
-                        else if (groupableLists.GetGroupableList(groupable) == null)
-                        {
-                            groupableLists.AddGroupableList(new GroupableList(groupable));
-                        }
                     }
                 }
             }
         }
         
-        foreach (GroupableList list in groupableLists.Lists)
+        foreach (IGridObject gridObject in gridObjects)
         {
-            foreach (IGroupable groupable in list.Groupables)
+            if(gridObject != null && gridObject.transform.TryGetComponent(out IGroupable groupable))
             {
-                groupable.GroupElements.Clear();
-
-                foreach (IGroupable g in list.Groupables)
+                IGroupable[] groupElements = groupable.GroupElements.ToArray();
+                foreach (IGroupable groupElement in groupElements)
                 {
-                    groupable.AddGroupElement(g);
-                    g.AddGroupElement(groupable);
+                    MergeGroupElements(groupElement, groupable);
                 }
             }
         }
@@ -64,58 +57,13 @@ public class GroupSystem: IGroupSystem
     {
         if (groupable.GroupIndex == groupableNeighbour.GroupIndex)
         {
-            GroupableList neighbourList = groupableLists.GetGroupableList(groupableNeighbour);
-            if(neighbourList == null)
-            {
-                neighbourList = new GroupableList(groupableNeighbour);
-                groupableLists.AddGroupableList(neighbourList);
-            }
-            neighbourList.Add(groupable);
-        }
-        else if (groupableLists.GetGroupableList(groupable) == null)
-        {
-            groupableLists.AddGroupableList(new GroupableList(groupable));
+            MergeGroupElements(groupable, groupableNeighbour);
         }
     }
-
-    class GroupableLists
+    private void MergeGroupElements(IGroupable groupable1, IGroupable groupable2)
     {
-        public GroupableLists()
-        {
-            Lists = new List<GroupableList>();
-        }
-
-        public List<GroupableList> Lists { get; }
-
-        public GroupableList GetGroupableList(IGroupable groupable)
-        {
-            return Lists.Find(list => list.ContainsGroupable(groupable));
-        }
-
-        public void AddGroupableList(GroupableList groupableList)
-        {
-            Lists.Add(groupableList);
-        }
+        groupable1.AddGroupElements(groupable2.GroupElements);
+        groupable2.AddGroupElements(groupable1.GroupElements);
     }
 
-    class GroupableList
-    {
-        public HashSet<IGroupable> Groupables { get; }
-    
-        public GroupableList(IGroupable groupable)
-        {
-            Groupables = new HashSet<IGroupable> { groupable };
-        }
-    
-        public bool ContainsGroupable(IGroupable groupable)
-        {
-            return Groupables.Contains(groupable);
-        }
-        
-        public void Add(IGroupable groupable)
-        {
-            Groupables.Add(groupable);
-        }
-    
-    }
 }

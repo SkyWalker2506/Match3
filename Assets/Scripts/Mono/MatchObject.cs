@@ -6,7 +6,7 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
 {
     [field: SerializeField] public int GroupIndex { get; private set; }
     public int GroupElementCount => GroupElements.Count;
-    [field: SerializeField] public HashSet<IGridObject> GroupElements { get; set; }
+    [field: SerializeField] public HashSet<IGroupable> GroupElements { get; set; }
     public int[] RendererLevelLimits { get; set; }
     public Action<IGridObject> OnDamaged { get; }
     public Action<IGridObject> OnDestroyed { get; set; }
@@ -27,12 +27,20 @@ public class MatchObject : GridObject, IGroupable, IDamagable, IDestroyable, IMo
 
     public void AddGroupElement(IGroupable groupable)
     {
-        GroupElements.Add(groupable.transform.GetComponent<IGridObject>());
+        GroupElements.Add(groupable.transform.GetComponent<IGroupable>());
     }
     
     public void ResetGroupElements()
     {
-        GroupElements = new HashSet<IGridObject>();
+        GroupElements = new HashSet<IGroupable>();
+    }
+
+    public void AddGroupElements(HashSet<IGroupable> groupables)
+    {
+        foreach (IGroupable groupable in groupables)
+        {
+            AddGroupElement(groupable);
+        }
     }
 
     public void Damage(int damage)

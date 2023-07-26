@@ -6,9 +6,8 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private GridData gridData;
-    [SerializeField] private float dropHeight = 20;
-    [SerializeField] private float dropTime = 1;
-    
+    private float dropHeight => gridData.DropHeight;
+    private float dropTime => gridData.DropTime;
     private Grid<IGridObject> grid;
     private IGroupSystem groupSystem = new GroupSystem();
     private IDamageSystem damageSystem = new DamageSystem();

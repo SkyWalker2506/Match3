@@ -6,7 +6,8 @@ public interface IGroupable
     Transform transform { get; }
     int GroupIndex { get; }
     int GroupElementCount { get; }
-    HashSet<IGridObject> GroupElements { get; set; }
+    HashSet<IGroupable> GroupElements { get; set; }
     void AddGroupElement(IGroupable groupable);
     void ResetGroupElements();
+    void AddGroupElements(HashSet<IGroupable> groupables);
 }
