@@ -40,6 +40,4 @@ public class CreateSystem : ICreateSystem
         return gridObject;
     }
     
-    
-    
 }

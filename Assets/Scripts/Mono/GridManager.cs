@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using DG.Tweening;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -12,41 +11,35 @@ public class GridManager : MonoBehaviour
     private IGroupSystem groupSystem = new GroupSystem();
     private IDamageSystem damageSystem = new DamageSystem();
     private ICreateSystem createSystem;
+    private IMoveSystem moveSystem;
     
     
     private void Awake()
     {
         createSystem = new CreateSystem(gridData.MatchObjects,gridData.ObstacleObjects);
         CreateGrid();
+        moveSystem = new MoveSystem(grid, dropTime);
         Camera.main.orthographicSize = gridData.CellSize * Mathf.Max(gridData.Width, gridData.Height * Camera.main.aspect);
+        UpdateGridElements();
     }
     
     private void CreateGrid()
     {
         grid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize*-.5f, CreateRandomGridObject);
-        StartCoroutine(nameof(UpdateGridElements));
     }
 
-    IEnumerator UpdateGridElements()
+    private void UpdateGridElements()
     {
         ReIndexGridObjects();
         CreateMissingGridObjects();
-        foreach (IGridObject gridObject in grid.GridObjects)
-        {
-            if (gridObject != null)
-            {
-                MoveGridObject(gridObject, grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex), dropTime,Ease.OutBounce);
-            }
-        }
+        moveSystem.MoveGridObjectsToPositions();
         groupSystem.GroupGridObjects(grid.GridObjects);
         foreach (IGridObject gridObject in grid.GridObjects)
         {
             gridObject?.UpdateSprite();
         }
-        yield return new WaitForFixedUpdate();
-
     }
-    
+
     private IGridObject CreateRandomGridObject(Grid<IGridObject> grid, int width, int height)
     {
         return CreateGridObject(grid,width,height,createSystem.CreateRandomGridObject);
@@ -54,30 +47,37 @@ public class GridManager : MonoBehaviour
 
     private IGridObject CreateRandomMatchObject(Grid<IGridObject> grid, int width, int height)
     {
-        return CreateGridObject(grid,width,height,createSystem.CreateRandomMatchObject);
+        return CreateGridObject(grid, width,height, createSystem.CreateRandomMatchObject);
     }
     
     private  IGridObject CreateGridObject(Grid<IGridObject> grid, int width, int height, Func<int, int,IGridObject> CreateMethod)
     {
         IGridObject gridObject = CreateMethod(width, height);
-        Vector3 startPos = grid.GetWorldPosition(width, height);
+        SetGridObject(grid, gridObject);
+        return gridObject;
+    }
+
+    private void SetGridObject(Grid<IGridObject> grid, IGridObject gridObject)
+    {
+        Vector3 startPos = grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex);
         startPos.y = dropHeight;
         gridObject.transform.position = startPos;
         if (gridObject.transform.TryGetComponent(out IRenderByGroupSize renderByGroupSize))
         {
             renderByGroupSize.RendererLevelLimits = gridData.RendererLevelLimits;
         }
+
         if (gridObject.transform.TryGetComponent(out IClickable clickable))
         {
             clickable.OnClicked += OnGridObjectClicked;
         }
+
         if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
         {
             destroyable.OnDestroyed += OnGridObjectDestroyed;
         }
-        return gridObject;
     }
-    
+
     private void OnGridObjectClicked(IGridObject gridObject)
     {
         damageSystem.ApplyMatchDamage(grid,gridObject);
@@ -89,17 +89,15 @@ public class GridManager : MonoBehaviour
         {
             clickable.OnClicked -= OnGridObjectClicked;
         }
+        
+        if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
+        {
+            destroyable.OnDestroyed -= OnGridObjectDestroyed;
+        }
 
         grid.GridObjects[gridObject.WidthIndex, gridObject.HeightIndex] = null;
-        StartCoroutine(nameof(UpdateGridElements));
+        UpdateGridElements();
     }
-    
-    void MoveGridObject(IGridObject gridObject, Vector3 targetPos, float moveTime, Ease moveEase = Ease.Linear)
-    {
-        gridObject.transform.DOMove(targetPos, moveTime).SetEase(moveEase);
-    }
-
-   
 
     void ReIndexGridObjects()
     {
@@ -151,4 +149,3 @@ public class GridManager : MonoBehaviour
         }
     }
 }
-
