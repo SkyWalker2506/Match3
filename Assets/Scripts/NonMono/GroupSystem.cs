@@ -6,20 +6,13 @@ public class GroupSystem: IGroupSystem
     
     public void GroupGridObjects(IGridObject[,] gridObjects)
     {
-        foreach (IGridObject gridObject in gridObjects)
-        {
-            if(gridObject != null && gridObject.transform.TryGetComponent(out IGroupable groupable))
-            {
-                groupable.ResetGroupElements();
-            }
-        }
-
         for (int i = 0; i < gridObjects.GetLength(0); i++)
         {
             for (int j = 0; j < gridObjects.GetLength(1); j++)
             {
                 if (gridObjects[i, j] != null && gridObjects[i, j].transform.TryGetComponent(out IGroupable groupable))
                 {
+                    groupable.ResetGroupElements();
                     groupable.AddGroupElement(groupable);
 
                     if (i > 0)

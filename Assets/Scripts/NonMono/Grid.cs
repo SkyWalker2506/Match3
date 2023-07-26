@@ -1,29 +1,22 @@
 ﻿using System;
 using UnityEngine;
 
-public class Grid<TGridObject> {
-
-    public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-    public class OnGridObjectChangedEventArgs : EventArgs 
-    {
-        public int x;
-        public int y;
-    }
+public class Grid<T> {
 
     private int width;
     private int height;
     private float cellSize;
     private Vector3 originPosition;
-    public TGridObject[,] GridObjects;
+    public T[,] GridObjects;
 
-    public Grid(int width, int height, float cellSize, Vector3 originPosition, Func<Grid<TGridObject>, int, int, TGridObject> createGridObject) 
+    public Grid(int width, int height, float cellSize, Vector3 originPosition, Func<Grid<T>, int, int, T> createGridObject) 
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
 
-        GridObjects = new TGridObject[width, height];
+        GridObjects = new T[width, height];
 
         for (int x = 0; x < GridObjects.GetLength(0); x++) 
         {
@@ -55,32 +48,27 @@ public class Grid<TGridObject> {
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
     }
 
-    public void SetGridObject(int x, int y, TGridObject value) {
+    public void SetGridObject(int x, int y, T value) {
         if (x >= 0 && y >= 0 && x < width && y < height) {
             GridObjects[x, y] = value;
-            if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
         }
     }
 
-    public void TriggerGridObjectChanged(int x, int y) {
-        if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
-    }
-
-    public void SetGridObject(Vector3 worldPosition, TGridObject value) {
+    public void SetGridObject(Vector3 worldPosition, T value) {
         int x, y;
         GetXY(worldPosition, out x, out y);
         SetGridObject(x, y, value);
     }
 
-    public TGridObject GetGridObject(int x, int y) {
+    public T GetGridObject(int x, int y) {
         if (x >= 0 && y >= 0 && x < width && y < height) {
             return GridObjects[x, y];
         } else {
-            return default(TGridObject);
+            return default(T);
         }
     }
 
-    public TGridObject GetGridObject(Vector3 worldPosition) {
+    public T GetGridObject(Vector3 worldPosition) {
         int x, y;
         GetXY(worldPosition, out x, out y);
         return GetGridObject(x, y);

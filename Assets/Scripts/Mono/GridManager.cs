@@ -27,6 +27,25 @@ public class GridManager : MonoBehaviour
         StartCoroutine(nameof(UpdateGridElements));
     }
 
+    IEnumerator UpdateGridElements()
+    {
+        ReIndexGridObjects();
+        CreateMissingGridObjects();
+        foreach (IGridObject gridObject in grid.GridObjects)
+        {
+            if (gridObject != null)
+            {
+                MoveGridObject(gridObject, grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex), dropTime,Ease.OutBounce);
+            }
+        }
+        groupSystem.GroupGridObjects(grid.GridObjects);
+        foreach (IGridObject gridObject in grid.GridObjects)
+        {
+            gridObject?.UpdateSprite();
+        }
+        yield return new WaitForFixedUpdate();
+
+    }
     
     private IGridObject CreateRandomGridObject(Grid<IGridObject> grid, int width, int height)
     {
@@ -80,26 +99,7 @@ public class GridManager : MonoBehaviour
         gridObject.transform.DOMove(targetPos, moveTime).SetEase(moveEase);
     }
 
-    IEnumerator UpdateGridElements()
-    {
-        ReIndexGridObjects();
-        yield return new WaitForFixedUpdate();
-        CreateMissingGridObjects();
-        foreach (IGridObject gridObject in grid.GridObjects)
-        {
-            if (gridObject != null)
-            {
-                MoveGridObject(gridObject, grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex), dropTime,Ease.OutBounce);
-            }
-        }
-        yield return new WaitForFixedUpdate();
-        groupSystem.GroupGridObjects(grid.GridObjects);
-        yield return new WaitForFixedUpdate();
-        foreach (IGridObject gridObject in grid.GridObjects)
-        {
-            gridObject?.UpdateSprite();
-        }
-    }
+   
 
     void ReIndexGridObjects()
     {
