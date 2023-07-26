@@ -1,4 +1,7 @@
-public interface IGroupSystem
+namespace Match3.Interface
 {
-    void GroupGridObjects(IGridObject[,] gridObjects);
+    public interface IGroupSystem
+    {
+        void GroupGridObjects(IGridObject[,] gridObjects);
+    }
 }

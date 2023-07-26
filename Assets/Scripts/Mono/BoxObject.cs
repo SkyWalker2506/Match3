@@ -1,37 +1,41 @@
 using System;
+using Match3.Interface;
 using UnityEngine;
 
-public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDestroyable, INonMoveable
+namespace Match3.Mono
 {
-    [field: SerializeField]  public int MaxHealth { get; private set; }
-    public int CurrentHealth { get; private set; }
-    public Action<IGridObject> OnDamaged { get; }
-    public Action<IGridObject> OnDestroyed { get; set; }
-
-    private void Awake()
+    public class BoxObject : GridObject, IHaveHealth, IDamagableFromNeighbour, IDestroyable, INonMoveable
     {
-        CurrentHealth = MaxHealth;
-    }
+        [field: SerializeField]  public int MaxHealth { get; private set; }
+        public int CurrentHealth { get; private set; }
+        public Action<IGridObject> OnDamaged { get; }
+        public Action<IGridObject> OnDestroyed { get; set; }
 
-    public void Damage(int damage)
-    {
-        CurrentHealth -= damage;
-        UpdateSprite();
-        OnDamaged?.Invoke(this);
-        if (CurrentHealth <= 0)
+        private void Awake()
         {
-            Destroy();
+            CurrentHealth = MaxHealth;
         }
-    }
 
-    public void Destroy()
-    {
-        OnDestroyed?.Invoke(this);
-        Destroy(gameObject);
-    }
+        public void Damage(int damage)
+        {
+            CurrentHealth -= damage;
+            UpdateSprite();
+            OnDamaged?.Invoke(this);
+            if (CurrentHealth <= 0)
+            {
+                Destroy();
+            }
+        }
 
-    public override void UpdateSprite()
-    {
-        SetSprite(CurrentHealth-1);
+        public void Destroy()
+        {
+            OnDestroyed?.Invoke(this);
+            Destroy(gameObject);
+        }
+
+        public override void UpdateSprite()
+        {
+            SetSprite(CurrentHealth-1);
+        }
     }
 }

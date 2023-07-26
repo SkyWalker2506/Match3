@@ -1,7 +1,10 @@
 using System;
 
-public interface IDestroyable
+namespace Match3.Interface
 {
-    Action<IGridObject> OnDestroyed { get; set; }
-    void Destroy();
+    public interface IDestroyable
+    {
+        Action<IGridObject> OnDestroyed { get; set; }
+        void Destroy();
+    }
 }

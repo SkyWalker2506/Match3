@@ -1,7 +1,10 @@
 using System;
 
-public interface IMoveDown
+namespace Match3.Interface
 {
-    Action OnMoved { get; }
-    void MoveDown(IGridObject gridObject);
+    public interface IMoveDown
+    {
+        Action OnMoved { get; }
+        void MoveDown(IGridObject gridObject);
+    }
 }

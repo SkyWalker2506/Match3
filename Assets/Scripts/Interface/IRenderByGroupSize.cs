@@ -1,4 +1,7 @@
-public interface IRenderByGroupSize
+namespace Match3.Interface
 {
-    public int[] RendererLevelLimits { get; set; }
+    public interface IRenderByGroupSize
+    {
+        public int[] RendererLevelLimits { get; set; }
+    }
 }

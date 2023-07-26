@@ -1,4 +1,7 @@
-public interface IDamagableFromNeighbour : IDamagable
+namespace Match3.Interface
 {
+    public interface IDamagableFromNeighbour : IDamagable
+    {
     
+    }
 }

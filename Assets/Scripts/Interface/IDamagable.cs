@@ -1,7 +1,10 @@
 using System;
 
-public interface IDamagable
+namespace Match3.Interface
 {
-    Action<IGridObject> OnDamaged { get; }
-    void Damage(int damage);
+    public interface IDamagable
+    {
+        Action<IGridObject> OnDamaged { get; }
+        void Damage(int damage);
+    }
 }

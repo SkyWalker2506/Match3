@@ -1,5 +1,8 @@
-public interface IHaveHealth
+namespace Match3.Interface
 {
-    int MaxHealth { get; }
-    int CurrentHealth { get; }
+    public interface IHaveHealth
+    {
+        int MaxHealth { get; }
+        int CurrentHealth { get; }
+    }
 }

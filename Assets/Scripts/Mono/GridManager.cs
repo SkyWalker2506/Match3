@@ -1,150 +1,108 @@
-using System;
 using System.Collections;
+using Match3.Interface;
+using Match3.NonMono;
+using Match3.Scriptable;
 using UnityEngine;
 
-public class GridManager : MonoBehaviour
+namespace Match3.Mono
 {
-    [SerializeField] private GridData gridData;
-    private float dropHeight => gridData.DropHeight;
-    private float dropTime => gridData.DropTime;
-    private Grid<IGridObject> grid;
-    private IGroupSystem groupSystem = new GroupSystem();
-    private IDamageSystem damageSystem = new DamageSystem();
-    private ICreateSystem createSystem;
-    private IMoveSystem moveSystem;
+    public class GridManager : MonoBehaviour
+    {
+        [SerializeField] private GridData gridData;
+        private float dropHeight => gridData.DropHeight;
+        private float dropTime => gridData.DropTime;
+        private Grid<IGridObject> gameGrid;
+        private IGroupSystem groupSystem = new GroupSystem();
+        private IDamageSystem damageSystem = new DamageSystem();
+        private ICreateSystem createSystem;
+        private IMoveSystem moveSystem;
+        private IModifySystem modifySystem;
     
+        private void Awake()
+        {
+            createSystem = new CreateSystem(gridData.MatchObjects,gridData.ObstacleObjects);
+            CreateGrid();
+            createSystem.SetGrid(gameGrid);
+            moveSystem = new MoveSystem(gameGrid, dropTime);
+            modifySystem = new ModifySystem(gameGrid);
+            Camera.main.orthographicSize =
+                gridData.CellSize * Mathf.Max(gridData.Width, gridData.Height * Camera.main.aspect)*1.1f;
+            StartCoroutine(nameof(UpdateGridElements));
+        }
     
-    private void Awake()
-    {
-        createSystem = new CreateSystem(gridData.MatchObjects,gridData.ObstacleObjects);
-        CreateGrid();
-        moveSystem = new MoveSystem(grid, dropTime);
-        Camera.main.orthographicSize = gridData.CellSize * Mathf.Max(gridData.Width, gridData.Height * Camera.main.aspect);
-        UpdateGridElements();
-    }
-    
-    private void CreateGrid()
-    {
-        grid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize*-.5f, CreateRandomGridObject);
-    }
-
-    private void UpdateGridElements()
-    {
-        ReIndexGridObjects();
-        CreateMissingGridObjects();
-        moveSystem.MoveGridObjectsToPositions();
-        groupSystem.GroupGridObjects(grid.GridObjects);
-        foreach (IGridObject gridObject in grid.GridObjects)
+        private void CreateGrid()
         {
-            gridObject?.UpdateSprite();
-        }
-    }
-
-    private IGridObject CreateRandomGridObject(Grid<IGridObject> grid, int width, int height)
-    {
-        return CreateGridObject(grid,width,height,createSystem.CreateRandomGridObject);
-    }
-
-    private IGridObject CreateRandomMatchObject(Grid<IGridObject> grid, int width, int height)
-    {
-        return CreateGridObject(grid, width,height, createSystem.CreateRandomMatchObject);
-    }
-    
-    private  IGridObject CreateGridObject(Grid<IGridObject> grid, int width, int height, Func<int, int,IGridObject> CreateMethod)
-    {
-        IGridObject gridObject = CreateMethod(width, height);
-        SetGridObject(grid, gridObject);
-        return gridObject;
-    }
-
-    private void SetGridObject(Grid<IGridObject> grid, IGridObject gridObject)
-    {
-        Vector3 startPos = grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex);
-        startPos.y = dropHeight;
-        gridObject.transform.position = startPos;
-        if (gridObject.transform.TryGetComponent(out IRenderByGroupSize renderByGroupSize))
-        {
-            renderByGroupSize.RendererLevelLimits = gridData.RendererLevelLimits;
+            gameGrid = new Grid<IGridObject>(gridData.Width, gridData.Height, gridData.CellSize, new Vector3(gridData.Width-1,gridData.Height-1,0) * gridData.CellSize * -.5f, CreateFirstGridObjects);
         }
 
-        if (gridObject.transform.TryGetComponent(out IClickable clickable))
+        private IEnumerator UpdateGridElements()
         {
-            clickable.OnClicked += OnGridObjectClicked;
-        }
-
-        if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
-        {
-            destroyable.OnDestroyed += OnGridObjectDestroyed;
-        }
-    }
-
-    private void OnGridObjectClicked(IGridObject gridObject)
-    {
-        damageSystem.ApplyMatchDamage(grid,gridObject);
-    }
-
-    private void OnGridObjectDestroyed(IGridObject gridObject)
-    {
-        if (gridObject.transform.TryGetComponent(out IClickable clickable))
-        {
-            clickable.OnClicked -= OnGridObjectClicked;
-        }
-        
-        if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
-        {
-            destroyable.OnDestroyed -= OnGridObjectDestroyed;
-        }
-
-        grid.GridObjects[gridObject.WidthIndex, gridObject.HeightIndex] = null;
-        UpdateGridElements();
-    }
-
-    void ReIndexGridObjects()
-    {
-        IGridObject[,] gridObjects = grid.GridObjects; 
-        for (int i = 0; i < gridObjects.GetLength(0); i++)
-        {
-            for (int j = 0; j < gridObjects.GetLength(1); j++)
+            modifySystem.ReIndexGridObjects();
+            CreateMissingGridObjects();
+            moveSystem.MoveGridObjectsToPositions();
+            yield return new WaitForFixedUpdate();
+            groupSystem.GroupGridObjects(gameGrid.GridObjects);
+            yield return new WaitForFixedUpdate();
+            foreach (IGridObject gridObject in gameGrid.GridObjects)
             {
-                if (gridObjects[i, j] == null)
-                {
-                    for (int k = j+1; k < gridObjects.GetLength(1); k++)
-                    {
-                        if(gridObjects[i, k] != null)
-                        {
-                            if (gridObjects[i, k] is not INonMoveable)
-                            {
-                                gridObjects[i, j] = gridObjects[i, k];
-                                gridObjects[i, j].WidthIndex = i;
-                                gridObjects[i, j].HeightIndex = j;
-                                gridObjects[i, k] = null;
-                            }
-                            break;
-                        }
-                    }
-                }
+                gridObject?.UpdateSprite();
             }
         }
-    }
     
-    void CreateMissingGridObjects()
-    {
-        IGridObject[,] gridObjects = grid.GridObjects; 
-        for (int i = 0; i < gridObjects.GetLength(0); i++)
+        private IGridObject CreateFirstGridObjects(Grid<IGridObject> grid, int width, int height)
         {
-            var height = gridObjects.GetLength(1);
-            for (int j = 0; j < height; j++)
+            IGridObject gridObject = createSystem.CreateRandomGridObject(width, height);
+            SetGridObject(grid, gridObject);
+            return gridObject;
+        }
+
+        private void SetGridObject(Grid<IGridObject> grid, IGridObject gridObject)
+        {
+            Vector3 startPos = grid.GetWorldPosition(gridObject.WidthIndex, gridObject.HeightIndex);
+            startPos.y = dropHeight;
+            gridObject.transform.position = startPos;
+            if (gridObject.transform.TryGetComponent(out IRenderByGroupSize renderByGroupSize))
             {
+                renderByGroupSize.RendererLevelLimits = gridData.RendererLevelLimits;
+            }
 
-                if (gridObjects[i, height - j - 1] == null)
-                {
-                    gridObjects[i, height - j - 1] = CreateRandomMatchObject(grid, i, height - j - 1);
+            if (gridObject.transform.TryGetComponent(out IClickable clickable))
+            {
+                clickable.OnClicked += OnGridObjectClicked;
+            }
 
-                }
-                else if (gridObjects[i, height - j - 1]  is INonMoveable)
-                {
-                    break;
-                }
+            if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
+            {
+                destroyable.OnDestroyed += OnGridObjectDestroyed;
+            }
+        }
+
+        private void OnGridObjectClicked(IGridObject gridObject)
+        {
+            damageSystem.ApplyMatchDamage(gameGrid,gridObject);
+        }
+
+        private void OnGridObjectDestroyed(IGridObject gridObject)
+        {
+            if (gridObject.transform.TryGetComponent(out IClickable clickable))
+            {
+                clickable.OnClicked -= OnGridObjectClicked;
+            }
+        
+            if (gridObject.transform.TryGetComponent(out IDestroyable destroyable))
+            {
+                destroyable.OnDestroyed -= OnGridObjectDestroyed;
+            }
+
+            gameGrid.GridObjects[gridObject.WidthIndex, gridObject.HeightIndex] = null;
+            StartCoroutine(nameof(UpdateGridElements));
+        }
+
+        void CreateMissingGridObjects()
+        {
+            foreach (var gridObject in createSystem.CreateMissingGridObjects())
+            {
+                SetGridObject(gameGrid, gridObject);
             }
         }
     }

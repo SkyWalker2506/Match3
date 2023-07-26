@@ -1,6 +1,9 @@
 using System;
 
-public interface IClickable
+namespace Match3.Interface
 {
-    Action<IGridObject> OnClicked { get; set; }
+    public interface IClickable
+    {
+        Action<IGridObject> OnClicked { get; set; }
+    }
 }

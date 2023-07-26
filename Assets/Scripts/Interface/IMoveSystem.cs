@@ -1,7 +1,7 @@
-using DG.Tweening;
-using UnityEngine;
-
-internal interface IMoveSystem
+namespace Match3.Interface
 {
-    public void MoveGridObjectsToPositions();
+    internal interface IMoveSystem
+    {
+        public void MoveGridObjectsToPositions();
+    }
 }

@@ -1,4 +1,9 @@
-public interface IDamageSystem
+using Match3.NonMono;
+
+namespace Match3.Interface
 {
-    void ApplyMatchDamage(Grid<IGridObject> grid, IGridObject gridObject);
+    public interface IDamageSystem
+    {
+        void ApplyMatchDamage(Grid<IGridObject> grid, IGridObject gridObject);
+    }
 }
